@@ -131,11 +131,11 @@ optional arguments:
 ### Step 2: calculate weekly top account balances
 
 Use 
-[calc_top_balances.py](https://github.com/roman1e2f5p8s/blockchain_historical_data/blob/main/calc_top_balances.py) to calculates top account balances from pickle files split by weeks.
+[calc_top_balances.py](https://github.com/roman1e2f5p8s/blockchain_account_balances/blob/main/calc_top_balances.py) to calculates top account balances from pickle files split by weeks.
 
 Example usage: assuming pickle files for the Dash blockchain are stored in ````./data/dash/````, and 
 the start date (returned by 
-[split_csv.py](https://github.com/roman1e2f5p8s/blockchain_historical_data/blob/main/split_csv.py)) 
+[split_csv.py](https://github.com/roman1e2f5p8s/blockchain_account_balances/blob/main/split_csv.py)) 
 is ````2014-01-26````:
 
 ```bash
