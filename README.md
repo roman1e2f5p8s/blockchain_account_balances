@@ -72,7 +72,7 @@ The queried data in the form of CSV files for other blockchains is publicly avai
 
 ## Data processing
 
-Queried data must thereafter be processed in order to calculate weekly top token holders.
+Queried data must thereafter be processed in order to calculate weekly top account balances.
 Two Python scripts are used for data processing: 
 [split_csv.py](https://github.com/roman1e2f5p8s/blockchain_account_balances/blob/main/split_csv.py) and 
 [calc_top_balances.py](https://github.com/roman1e2f5p8s/blockchain_account_balances/blob/main/calc_top_balances.py).
@@ -126,4 +126,55 @@ optional arguments:
   --rm                 Remove CSV files after converting, defaults to False
   --end_date END_DATE  End date to consider, defaults to 2022-01-16
   --verbose            Print detailed output to console, defaults to False
+```
+
+### Step 2: calculate weekly top account balances
+
+Use 
+[calc_top_balances.py](https://github.com/roman1e2f5p8s/blockchain_historical_data/blob/main/calc_top_balances.py) to calculates top account balances from pickle files split by weeks.
+
+Example usage: assuming pickle files for the Dash blockchain are stored in ````./data/dash/````, and 
+the start date (returned by 
+[split_csv.py](https://github.com/roman1e2f5p8s/blockchain_historical_data/blob/main/split_csv.py)) 
+is ````2014-01-26````:
+
+```bash
+python3.9 calc_top_balances.py --dir="data" --name="dash" --start_date="2014-01-26" --verbose
+```
+
+This will generate a CSV file (saved in ````./data/dash/````) with weekly top 10000 account balances.
+For example, top five account balances for the first three dates are given in the table below:
+
+|2014-02-02      | 2014-02-09      | 2014-02-16      |
+|----------------|-----------------|-----------------|
+|184214.658      | 193500.99334055 | 193500.99334055 |
+|159329.968      | 184214.658      | 184214.658      |
+|143733.42810545 | 157599.995      | 157501          |
+|94363.99        | 157501          | 157500          |
+|88752.40714677  | 142009.03728116 | 141571.506493   |
+
+See help files for more details:
+
+```bash
+python3.9 calc_top_balances.py --help
+```
+
+```
+usage: calc_top_balances.py --dir DIR --name NAME --start_date START_DATE [-h] [--top TOP]
+                            [--drop_step DROP_STEP] [--rm] [--end_date END_DATE] [--verbose]
+
+Calculates top account balances from pickle files split by weeks
+
+required arguments:
+  --dir DIR                Path to parent directory with blockchain historical data
+  --name NAME              Name of blockchain (also the name of the folder with pickle files)
+  --start_date START_DATE  Start date to consider (this date is printed by split_csv.py)
+
+optional arguments:
+  -h, --help               show this help message and exit
+  --top TOP                How many top account balances to consider, defaults to 10000
+  --drop_step DROP_STEP    Drop zero balances (after reading each DROP_STEP-th pickle file) from directory before sorting it (reduces memory consumption), defaults to 10
+  --rm                     Remove pickle files after calculating, defaults to False
+  --end_date END_DATE      End date to consider, defaults to 2022-01-16
+  --verbose                Print detailed output to console, defaults to False
 ```

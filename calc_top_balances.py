@@ -1,8 +1,8 @@
-# This script can bee used to calcualted top ERC20 token holders from weekly pickle files.
+# This script can bee used to calcualted top account balances from weekly pickle files.
 #
 # Author:  Roman Overko
 # Contact: roman.overko@iota.org
-# Date:    February 02, 2022
+# Date:    February 09, 2022
 
 import os
 import gc
@@ -17,7 +17,7 @@ from collections import defaultdict
 def main():
     formatter = lambda prog: argparse.RawTextHelpFormatter(prog, max_help_position=50)
     parser = argparse.ArgumentParser(
-            description='Calculates top token holders from pickle files split by weeks',
+            description='Calculates top account balances from pickle files split by weeks',
             add_help=False,
             formatter_class=formatter,
             )
@@ -28,13 +28,13 @@ def main():
             '--dir',
             type=str,
             required=True,
-            help='Path to parent directory with ERC20 tokens data',
+            help='Path to parent directory with blockchain historical data',
             )
     required_args.add_argument(
             '--name',
             type=str,
             required=True,
-            help='Name of ERC20 token (also the name of the folder with pickle files)',
+            help='Name of blockchain (also the name of the folder with pickle files)',
             )
     required_args.add_argument(
             '--start_date',
@@ -55,7 +55,14 @@ def main():
             '--top',
             type=int,
             default=10000,
-            help='How many top holders to consider, defaults to 10000',
+            help='How many top account balances to consider, defaults to 10000',
+            )
+    optional_args.add_argument(
+            '--drop_step',
+            type=int,
+            default=10,
+            help='Drop zero balances (after reading each DROP_STEP-th pickle file) from directory '
+                'before sorting it (reduces memory consumption), defaults to 10',
             )
     optional_args.add_argument(
             '--rm',
@@ -81,37 +88,52 @@ def main():
     if not os.path.isdir(DIR):
         raise FileNotFoundError('Directory \"{}\" does not exist!'.format(DIR))
     
-    PKL_FILES = [f for f in os.listdir(DIR) if f[-3:] == 'pkl']
-    if not PKL_FILES:
-        raise FileNotFoundError('Directory \"{}\" contains no pickle files!'.format(DIR))
-    PKL_FILES = list(sorted(PKL_FILES))
-    N_FILES = len(PKL_FILES)
+    SUB_DIRS = [d for d in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, d))]
+    if not SUB_DIRS:
+        raise FileNotFoundError('Directory \"{}\" contains no subfolders!'.format(DIR))
+    
+    n_files = []
+    for sd in SUB_DIRS:
+        sub_dir = os.path.join(DIR, sd)
+        pkl_files = [f for f in os.listdir(sub_dir) if f[-3:] == 'pkl']
+        if not pkl_files:
+            raise FileNotFoundError('Directory \"{}\" contains no pickle files!'.format(DIR))
+        n_files.append(len(pkl_files))
+    assert n_files.count(n_files[0]) == len(n_files)
+    PKL_FILES = list(sorted(pkl_files))
+    N_FILES = len(pkl_files)
     
     START_DATE = datetime.datetime.strptime(args.start_date, '%Y-%m-%d')
     DELTA = datetime.timedelta(weeks=1)
 
     date = START_DATE + DELTA
-    tokens = defaultdict(float)
+    balances = defaultdict(float)
     main_df = pd.DataFrame()
 
-    print('Calculating top token holders...')
+    print('Calculating top account balances...')
     start = time()
     for i, file_ in enumerate(PKL_FILES):
         if args.verbose:
             print(' file {} out of {}'.format(i, N_FILES - 1), end='\r')
 
-        fname = os.path.join(DIR, file_)
-        f = open(fname, 'rb')
-        gc.disable()
-        df = pickle.load(f)
-        gc.enable()
-        f.close()
+        for sd in SUB_DIRS:
+            fname = os.path.join(DIR, sd, file_)
+            f = open(fname, 'rb')
+            gc.disable()
+            df = pickle.load(f)
+            gc.enable()
+            f.close()
 
-        z1 = zip(*df.to_dict('list').values())
-        for address, value in z1:
-            tokens[address] += value
+            z1 = zip(*df.to_dict('list').values())
+            for address, value in z1:
+                balances[address] += value
+        
+        if i % args.drop_step:
+            sorted_d = [v for v in balances.values() if v]
+        else:
+            balances = defaultdict(float, {k: v for k, v in balances.items() if v})
+            sorted_d = list(balances.values())
 
-        sorted_d = [t for t in tokens.values() if t]
         sorted_d.sort(reverse=True)
         sorted_d_len = len(sorted_d)
         cut = args.top if sorted_d_len >= args.top else sorted_d_len
@@ -123,7 +145,8 @@ def main():
     print(' ' * 50, end='\r')
     print('Calculating done! Saving data...')
     assert main_df.shape[1] == N_FILES
-    fname = os.path.join(DIR, 'top{}_token_holders.csv'.format(args.top))
+    fname = os.path.join(DIR, 'top{}_balances.csv'.format(args.top))
+    main_df = main_df / 10**8 if not args.name.lower().startswith('eth') else main_df / 10**18
     main_df.to_csv(fname)
     print('Elapsed time: {:.4f} s'.format(time() - start))
     print('Data saved in {}'.format(fname))
