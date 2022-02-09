@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Overko
+    given-names: Roman
+    orcid: https://orcid.org/0000-0001-5164-5675
+title: "Account balances for different blockchains: data extraction and processing"
+version: 0.0.1
+date-released: 2021-09-20
+repository-code: \url{https://github.com/roman1e2f5p8s/blockchain_account_balances}
