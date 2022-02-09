@@ -74,33 +74,36 @@ The queried data in the form of CSV files for other blockchains is publicly avai
 
 Queried data must thereafter be processed in order to calculate weekly top token holders.
 Two Python scripts are used for data processing: 
-[split_csv.py](https://github.com/roman1e2f5p8s/erc20_token_holders/blob/main/split_csv.py) and 
-[calc_top_holders.py](https://github.com/roman1e2f5p8s/erc20_token_holders/blob/main/calc_top_holders.py).
+[split_csv.py](https://github.com/roman1e2f5p8s/blockchain_account_balances/blob/main/split_csv.py) and 
+[calc_top_balances.py](https://github.com/roman1e2f5p8s/blockchain_account_balances/blob/main/calc_top_balances.py).
 
 ### Step 1: split CSV files to weekly data saved in pickle files
 
-Use [split_csv.py](https://github.com/roman1e2f5p8s/erc20_token_holders/blob/main/split_csv.py) 
+Use [split_csv.py](https://github.com/roman1e2f5p8s/blockchain_account_balances/blob/main/split_csv.py) 
 to split CSV files downloaded from GCS by weekly data saved into pickle files.
 The choice of the pickle format over CSV is made to save storage space and speed up data loading.
 
-Example usage: assuming CSV files for SushiToken (can be downloaded from 
+Example usage: assuming CSV files for the Dash blockchain (can be downloaded from 
 [Google Drive](https://drive.google.com/drive/folders/1oWilo-ss1yRWieO4BZ-RvzhyP3Yk94Vt?usp=sharing) 
-or directly extracted using the ````extract2csv.sql```` script) are stored in ````./data/SushiToken/````:
+or directly extracted using both 
+[extract/btc_like/dash_inputs.sql](https://github.com/roman1e2f5p8s/blockchain_account_balances/blob/main/extract/btc_like/dash_inputs.sql) and 
+[extract/btc_like/dash_outputs.sql](https://github.com/roman1e2f5p8s/blockchain_account_balances/blob/main/extract/btc_like/dash_outputs.sql) scripts) are stored in ````./data/dash/````:
 
 ```bash
-python3.9 split_csv.py --dir="data" --name="SushiToken" --verbose
+python3.9 split_csv.py --dir="data" --name="dash" --verbose
 ```
 
-The script [split_csv.py](https://github.com/roman1e2f5p8s/erc20_token_holders/blob/main/split_csv.py) 
+The script 
+[split_csv.py](https://github.com/roman1e2f5p8s/blockchain_account_balances/blob/main/split_csv.py) 
 also outputs the start date to be used later in the 
-[calc_top_holders.py](https://github.com/roman1e2f5p8s/erc20_token_holders/blob/main/calc_top_holders.py) script. The start date is date such that a week ahead will be the 
-first date for which top token holders 
-will be calculated. For example, for SushiToken, 
-[split_csv.py](https://github.com/roman1e2f5p8s/erc20_token_holders/blob/main/split_csv.py) 
+[calc_top_balances.py](https://github.com/roman1e2f5p8s/blockchain_account_balances/blob/main/calc_top_balances.py) script. The start date is date such that a week ahead will be the 
+first date for which top richest accounts 
+will be calculated. For example, for Dash, 
+[split_csv.py](https://github.com/roman1e2f5p8s/blockchain_account_balances/blob/main/split_csv.py) 
 will output:
 
 ```
-Use "2020-08-30" as start_date for calc_top_holders.py
+Use "2014-01-26" as start_date for calc_top_balances.py
 ```
 
 See help files for more details:
@@ -108,4 +111,19 @@ See help files for more details:
 ```bash
 python3.9 split_csv.py --help
 ```
-...
+
+```
+usage: split_csv.py --dir DIR --name NAME [-h] [--rm] [--end_date END_DATE] [--verbose]
+
+Converts and splits CSV files (downloaded from GCS) to weekly data saved in pickle files
+
+required arguments:
+  --dir DIR            Path to parent directory with blockchain historical data
+  --name NAME          Name of blockchain (also the name of the folder with CSV files)
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --rm                 Remove CSV files after converting, defaults to False
+  --end_date END_DATE  End date to consider, defaults to 2022-01-16
+  --verbose            Print detailed output to console, defaults to False
+```
