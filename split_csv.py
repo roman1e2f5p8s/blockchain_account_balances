@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.9
+
 # This script can be used to split CSV files downloaded from GCS by weekly data saved into pickle files.
 # The resulting pickle files can then be processed by script calc_top_balances.py
 #
@@ -53,8 +55,8 @@ def main():
     optional_args.add_argument(
             '--end_date',
             type=str,
-            default='2022-01-16',
-            help='End date to consider, defaults to 2022-01-16'
+            default='2022-07-01',
+            help='End date to consider, defaults to 2022-07-01'
             )
     optional_args.add_argument(
             '--verbose',
@@ -74,8 +76,9 @@ def main():
     
     first_dates = []
     for sd in SUB_DIRS:
-        sub_dir = os.path.join(DIR, sd)
-        csv_files = [f for f in os.listdir(sub_dir) if f[-3:] == 'csv']
+        sub_dir = os.path.join(DIR, sd, 'csv')
+        # csv_files = [f for f in os.listdir(sub_dir) if f[-3:] == 'csv']
+        csv_files = os.listdir(sub_dir)
         if not csv_files:
             raise FileNotFoundError('Directory \"{}\" contains no CSV files!'.format(sub_dir))
         csv_files = list(sorted(csv_files))
@@ -96,6 +99,7 @@ def main():
     assert START_DATE.weekday() == END_WEEKDAY
     print('Use \"{}\" as start_date for calc_top_balances.py'.\
             format(datetime.datetime.strftime(START_DATE, '%Y-%m-%d')))
+    # exit()
     
     start = time()
     for sd in SUB_DIRS:
@@ -106,16 +110,20 @@ def main():
         to_save_df = pd.DataFrame()
         
         sub_dir = os.path.join(DIR, sd)
-        csv_files = [f for f in os.listdir(sub_dir) if f[-3:] == 'csv']
+        # csv_files = [f for f in os.listdir(sub_dir) if f[-3:] == 'csv']
+        csv_files = os.listdir(os.path.join(sub_dir, 'csv'))
         csv_files = list(sorted(csv_files))
         n_files = len(csv_files)
+
+        if not os.path.isdir(os.path.join(sub_dir, 'pkl')):
+            os.makedirs(os.path.join(sub_dir, 'pkl'))
 
         print('Converting data in \"{}\"...'.format(sub_dir))
         for i, file_ in enumerate(csv_files):
             if args.verbose:
                 print(' file {} out of {}'.format(i, n_files - 1), end='\r')
         
-            fname = os.path.join(sub_dir, file_)
+            fname = os.path.join(sub_dir, 'csv', file_)
             df = pd.read_csv(fname, dtype={'value': float}, parse_dates=['block_date'])
             csv_rows_counter += df.shape[0]
             
@@ -123,7 +131,7 @@ def main():
             remain_df = df[df['block_date'] > date]
         
             while not remain_df.empty:
-                to_save_df.to_pickle(os.path.join(sub_dir, '{:04d}.pkl'.format(week_counter)))
+                to_save_df.to_pickle(os.path.join(sub_dir, 'pkl', '{:04d}.pkl'.format(week_counter)))
                 pkl_rows_counter += to_save_df.shape[0]
                 week_counter += 1
                 date += DELTA
@@ -135,7 +143,7 @@ def main():
             if args.rm:
                 os.remove(fname)
         
-        to_save_df.to_pickle(os.path.join(sub_dir, '{:04d}.pkl'.format(week_counter)))
+        to_save_df.to_pickle(os.path.join(sub_dir, 'pkl', '{:04d}.pkl'.format(week_counter)))
         pkl_rows_counter += to_save_df.shape[0]
         assert pkl_rows_counter == csv_rows_counter
     
