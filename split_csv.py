@@ -85,7 +85,8 @@ def main():
         
         df = pd.read_csv(os.path.join(sub_dir, csv_files[0]), nrows=1, parse_dates=['block_date'])
         first_date = df['block_date'].iloc[0]
-        first_dates.append(first_date)
+        if first_date > pd.Timestamp(1970, 1, 1):
+            first_dates.append(first_date)
         del df
 
     first_date = min(first_dates)
@@ -99,6 +100,7 @@ def main():
     assert START_DATE.weekday() == END_WEEKDAY
     print('Use \"{}\" as start_date for calc_top_balances.py'.\
             format(datetime.datetime.strftime(START_DATE, '%Y-%m-%d')))
+    # print(first_dates)
     # exit()
     
     start = time()
@@ -121,7 +123,7 @@ def main():
         print('Converting data in \"{}\"...'.format(sub_dir))
         for i, file_ in enumerate(csv_files):
             if args.verbose:
-                print(' file {} out of {}'.format(i, n_files - 1), end='\r')
+                print(' file {} out of {}'.format(i, n_files - 1), end='\n')
         
             fname = os.path.join(sub_dir, 'csv', file_)
             df = pd.read_csv(fname, dtype={'value': float}, parse_dates=['block_date'])
@@ -147,7 +149,7 @@ def main():
         pkl_rows_counter += to_save_df.shape[0]
         assert pkl_rows_counter == csv_rows_counter
     
-    print(' ' * 50, end='\r')
+    print(' ' * 50, end='\n')
     print('Converting done!')
     print('Elapsed time: {:.4f} s'.format(time() - start))
 

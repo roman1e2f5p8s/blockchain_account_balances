@@ -1,0 +1,84 @@
+Use "2015-08-14" as start_date for calc_top_balances.py
+Converting data in "data/ethereum_classic/credit_fees"...
+ file 0 out of 21
+ file 1 out of 21
+ file 2 out of 21
+ file 3 out of 21
+ file 4 out of 21
+ file 5 out of 21
+ file 6 out of 21
+ file 7 out of 21
+ file 8 out of 21
+ file 9 out of 21
+ file 10 out of 21
+ file 11 out of 21
+ file 12 out of 21
+ file 13 out of 21
+ file 14 out of 21
+ file 15 out of 21
+ file 16 out of 21
+ file 17 out of 21
+ file 18 out of 21
+ file 19 out of 21
+ file 20 out of 21
+ file 21 out of 21
+Converting data in "data/ethereum_classic/debits"...
+ file 0 out of 25
+ file 1 out of 25
+ file 2 out of 25
+ file 3 out of 25
+ file 4 out of 25
+ file 5 out of 25
+ file 6 out of 25
+ file 7 out of 25
+ file 8 out of 25
+ file 9 out of 25
+ file 10 out of 25
+ file 11 out of 25
+ file 12 out of 25
+ file 13 out of 25
+ file 14 out of 25
+ file 15 out of 25
+ file 16 out of 25
+ file 17 out of 25
+ file 18 out of 25
+ file 19 out of 25
+ file 20 out of 25
+ file 21 out of 25
+ file 22 out of 25
+ file 23 out of 25
+ file 24 out of 25
+ file 25 out of 25
+Converting data in "data/ethereum_classic/debit_fees"...
+ file 0 out of 4
+ file 1 out of 4
+ file 2 out of 4
+ file 3 out of 4
+ file 4 out of 4
+Converting data in "data/ethereum_classic/credits"...
+ file 0 out of 22
+ file 1 out of 22
+ file 2 out of 22
+ file 3 out of 22
+ file 4 out of 22
+ file 5 out of 22
+ file 6 out of 22
+ file 7 out of 22
+ file 8 out of 22
+ file 9 out of 22
+ file 10 out of 22
+ file 11 out of 22
+ file 12 out of 22
+ file 13 out of 22
+ file 14 out of 22
+ file 15 out of 22
+ file 16 out of 22
+ file 17 out of 22
+ file 18 out of 22
+ file 19 out of 22
+ file 20 out of 22
+ file 21 out of 22
+ file 22 out of 22
+                                                  
+Converting done!
+Elapsed time: 244.6827 s

@@ -70,9 +70,9 @@ def main():
     optional_args.add_argument(
             '--drop_step',
             type=int,
-            default=10,
+            default=50,
             help='Drop zero balances (after reading each DROP_STEP-th pickle file) from directory '
-                'before sorting it (reduces memory consumption), defaults to 10',
+                'before sorting it (reduces memory consumption), defaults to 50',
             )
     optional_args.add_argument(
             '--rm',
@@ -152,7 +152,7 @@ def main():
     for i, file_ in enumerate(PKL_FILES):
         if args.verbose:
             print(' file {} out of {}'.format(i + NUM_PROCESSED_WEEKS,
-                N_FILES + NUM_PROCESSED_WEEKS - 1), end='\r')
+                N_FILES + NUM_PROCESSED_WEEKS - 1), end='\n')
 
         for sd in SUB_DIRS:
             fname = os.path.join(DIR, sd, 'pkl', file_)
@@ -204,7 +204,7 @@ def main():
             print('Exiting...')
             exit()
 
-    print(' ' * 50, end='\r')
+    print(' ' * 50, end='\n')
     print('Calculating done! Saving data...')
     # assert main_df.shape[1] == N_FILES if not args.keep_address else N_FILES / 2
     fname = os.path.join(DIR, 'top{}_balances'.format(args.top) + \
