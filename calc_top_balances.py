@@ -145,7 +145,7 @@ def main():
         balances = defaultdict(float)
         main_df = pd.DataFrame()
 
-    signal.signal(signal.SIGINT, handler)
+    # signal.signal(signal.SIGINT, handler)
 
     print('Calculating top account balances...')
     start = time()
@@ -167,31 +167,32 @@ def main():
                 balances[address] += (value / 10**8) if not args.name.lower().startswith('eth') \
                         else (value / 10**18)
         
-        if args.keep_address:
-            balances = defaultdict(float, {k: v for k, v in sorted(balances.items(), reverse=True, 
-                key=lambda item: item[1]) if v})
-            sorted_d_len = len(balances)
+        # if args.keep_address:
+            # balances = defaultdict(float, {k: v for k, v in sorted(balances.items(), reverse=True, 
+                # key=lambda item: item[1]) if v})
+            # sorted_d_len = len(balances)
+        # else:
+        if i % args.drop_step:
+            sorted_d = [v for v in balances.values() if v]
         else:
-            if i % args.drop_step:
-                sorted_d = [v for v in balances.values() if v]
-            else:
-                balances = defaultdict(float, {k: v for k, v in balances.items() if v})
-                sorted_d = list(balances.values())
-            sorted_d.sort(reverse=True)
-            sorted_d_len = len(sorted_d)
+            balances = defaultdict(float, {k: v for k, v in balances.items() if v})
+            sorted_d = list(balances.values())
+        sorted_d.sort(reverse=True)
+        sorted_d_len = len(sorted_d)
 
         cut = args.top if sorted_d_len >= args.top else sorted_d_len
     
-        if not args.keep_address:
-            df = pd.DataFrame({date.strftime('%Y-%m-%d'): sorted_d[:cut]})
-        else:
-            df = pd.DataFrame({date.strftime('%Y-%m-%d'): list(balances.keys())[:cut]})
-            df = pd.concat([df, pd.DataFrame({'': list(balances.values())[:cut]})], axis=1)
+        # if not args.keep_address:
+        df = pd.DataFrame({date.strftime('%Y-%m-%d'): sorted_d[:cut]})
+        # else:
+            # df = pd.DataFrame({date.strftime('%Y-%m-%d'): list(balances.keys())[:cut]})
+            # df = pd.concat([df, pd.DataFrame({'': list(balances.values())[:cut]})], axis=1)
         main_df = pd.concat([main_df, df], axis=1)
         date += DELTA
 
         # sleep(2)
 
+        '''
         if stop:
             print('\nSaving balances to pkl file at week {}...'.format(i + NUM_PROCESSED_WEEKS))
             with open(os.path.join(DIR, 'balances_{}.pickle'.format(i + NUM_PROCESSED_WEEKS + 1)), 
@@ -203,6 +204,7 @@ def main():
             main_df.to_csv(fname, index=False)
             print('Exiting...')
             exit()
+        '''
 
     print(' ' * 50, end='\n')
     print('Calculating done! Saving data...')
