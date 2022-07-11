@@ -127,7 +127,7 @@ def main():
 
     PKL_FILES = list(sorted(pkl_files))[NUM_PROCESSED_WEEKS:]
     N_FILES = len(PKL_FILES)
-    print(NUM_PROCESSED_WEEKS, N_FILES, PKL_FILES[0])
+    # print(NUM_PROCESSED_WEEKS, N_FILES, PKL_FILES[0])
     
     START_DATE = datetime.datetime.strptime(args.start_date, '%Y-%m-%d')
     DELTA = datetime.timedelta(weeks=1)
@@ -214,6 +214,8 @@ def main():
     with open(os.path.join(DIR, 'balances_{}.pickle'.format(N_FILES + NUM_PROCESSED_WEEKS - 1)), 
             'wb') as f:
         pickle.dump(balances, f, pickle.HIGHEST_PROTOCOL)
+    if args.verbose:
+        print(main_df.iloc[:20, :])
     print('Elapsed time: {:.4f} s'.format(time() - start))
     print('Data saved in {}'.format(fname))
 
