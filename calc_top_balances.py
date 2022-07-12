@@ -192,8 +192,9 @@ def main():
 
         # sleep(2)
 
-        '''
-        if stop:
+        # '''
+        # if stop:
+        if not (i % 50):
             print('\nSaving balances to pkl file at week {}...'.format(i + NUM_PROCESSED_WEEKS))
             with open(os.path.join(DIR, 'balances_{}.pickle'.format(i + NUM_PROCESSED_WEEKS + 1)), 
                     'wb') as f:
@@ -202,9 +203,9 @@ def main():
             fname = os.path.join(DIR, 'top{}_balances'.format(args.top) + \
                 '_addresses' * args.keep_address + '.csv')
             main_df.to_csv(fname, index=False)
-            print('Exiting...')
-            exit()
-        '''
+            # print('Exiting...')
+            # exit()
+        # '''
 
     print(' ' * 50, end='\n')
     print('Calculating done! Saving data...')
