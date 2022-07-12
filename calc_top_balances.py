@@ -195,8 +195,11 @@ def main():
         # '''
         # if stop:
         if not (i % 50):
-            BALANCES_PKL_FILE = [f for f in os.listdir(DIR) if f.endswith('pickle')][0]
-            os.remove(os.path.join(DIR, BALANCES_PKL_FILE))
+            try:
+                BALANCES_PKL_FILE = [f for f in os.listdir(DIR) if f.endswith('pickle')][0]
+                os.remove(os.path.join(DIR, BALANCES_PKL_FILE))
+            except:
+                pass
             print('\nSaving balances to pkl file at week {}...'.format(i + NUM_PROCESSED_WEEKS))
             with open(os.path.join(DIR, 'balances_{}.pickle'.format(i + NUM_PROCESSED_WEEKS + 1)), 
                     'wb') as f:
